@@ -58,6 +58,7 @@ class BasketServiceTest {
         basket = new Basket();
         basket.setId(UUID.randomUUID());
         basket.setBasketName("basketName");
+        basket.setOwnerId(UUID.randomUUID());
     }
 
     @DisplayName("Test Create Basket Successfully")
@@ -71,6 +72,7 @@ class BasketServiceTest {
 
         CreateBasketDto createBasketDto = CreateBasketDto.builder()
                 .basketName("basketName")
+                .ownerId(UUID.randomUUID().toString())
                 .basketItems(Set.of(addBasketItem1))
                 .build();
 
@@ -107,5 +109,65 @@ class BasketServiceTest {
 
         verify(basketRepository, times(1)).save(any());
         verify(basketItemRepository, times(1)).findById(any());
+    }
+
+    @DisplayName("Test Get User's Baskets Successfully")
+    @Test
+    void testGetUsersBasketsSuccessfully() {
+
+        BasketItem basketItem = new BasketItem();
+        basketItem.setId(UUID.randomUUID());
+        basketItem.setCollegeId(UUID.randomUUID());
+        basketItem.setDepartmentId(UUID.randomUUID());
+        basketItem.setCollegeName("collegeName");
+        basketItem.setDepartmentName("departmentName");
+
+        Basket basket = new Basket();
+        basket.setId(UUID.randomUUID());
+        basket.setBasketName("basketName");
+        basket.setOwnerId(UUID.randomUUID());
+        basket.addBasketItem(basketItem);
+
+        when(basketRepository.findByOwnerId(any())).thenReturn(Arrays.asList(basket));
+
+        List<BasketDto> basketDtoList = basketService.getUserBaskets(basket.getOwnerId());
+
+        assertThat(basketDtoList.size())
+                .isEqualTo(1);
+
+        assertThat(basketDtoList.get(0).getBasketId())
+                .isEqualTo(basket.getId().toString());
+
+
+        assertThat(basketDtoList.get(0).getBasketName())
+                .isEqualTo(basket.getBasketName());
+
+
+        assertThat(basketDtoList.get(0).getOwnerId())
+                .isEqualTo(basket.getOwnerId().toString());
+
+
+        assertThat(basketDtoList.get(0).getBasketItems().size())
+                .isEqualTo(1);
+
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getBasketItemId())
+                .isEqualTo(basketItem.getId().toString());
+
+
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getCollegeId())
+                .isEqualTo(basketItem.getCollegeId().toString());
+
+
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getDepartmentId())
+                .isEqualTo(basketItem.getDepartmentId().toString());
+
+
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getCollegeName())
+                .isEqualTo(basketItem.getCollegeName());
+
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getDepartmentName())
+                .isEqualTo(basketItem.getDepartmentName());
+
+        verify(basketRepository, times(1)).findByOwnerId(any());
     }
 }

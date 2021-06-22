@@ -12,8 +12,10 @@ import com.yataygecisle.preference.basket.web.models.BasketDto;
 import com.yataygecisle.preference.basket.web.models.CreateBasketDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -26,6 +28,7 @@ public class BasketServiceImpl implements BasketService {
     private final BasketMapper basketMapper;
     private final BasketItemMapper basketItemMapper;
 
+    @PreAuthorize("#createBasketDto.getOwnerId() == authentication.principal.getSubject() and hasAuthority('WRITE_BASKET')")
     @Override
     public BasketDto create(CreateBasketDto createBasketDto) {
         Basket basket = new Basket();
@@ -46,6 +49,14 @@ public class BasketServiceImpl implements BasketService {
         basketDto.setBasketItems(basketItemMapper.basketItemDtoToBasketItem(basket.getBasketItems()));
 
         return basketDto;
+    }
+
+    @PreAuthorize("#ownerId.toString() == authentication.principal.getSubject() and hasAuthority('READ_BASKET')")
+    @Override
+    public List<BasketDto> getUserBaskets(UUID ownerId) {
+        List<Basket> basket = basketRepository.findByOwnerId(ownerId);
+
+        return basketMapper.basketToBasketDto(basket);
     }
 
 }
