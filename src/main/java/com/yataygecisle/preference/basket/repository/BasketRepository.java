@@ -10,4 +10,6 @@ public interface BasketRepository extends JpaRepository<Basket, UUID> {
 
     List<Basket> findByOwnerId(UUID ownerId);
 
+    void deleteByOwnerId(UUID ownerId);
+
 }

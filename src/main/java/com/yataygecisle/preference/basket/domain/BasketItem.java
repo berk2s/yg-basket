@@ -1,6 +1,7 @@
 package com.yataygecisle.preference.basket.domain;
 
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,17 +19,26 @@ import java.util.UUID;
 @Entity
 public class BasketItem extends BaseEntity {
 
-    @Column(name = "department_id", unique = true)
-    private UUID departmentId;
-
-    @Column(name = "college_id", unique = true)
+    @Column(name = "college_id")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID collegeId;
+
+    @Column(name = "faculty_id")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    private UUID facultyId;
+
+    @Column(name = "course_id")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    private UUID courseId;
 
     @Column(name = "college_name")
     private String collegeName;
 
-    @Column(name = "department_name")
-    private String departmentName;
+    @Column(name = "faculty_name")
+    private String facultyName;
+
+    @Column(name = "course_name")
+    private String courseName;
 
     @ManyToMany(mappedBy = "basketItems", fetch = FetchType.LAZY)
     private List<Basket> baskets = new ArrayList<>();

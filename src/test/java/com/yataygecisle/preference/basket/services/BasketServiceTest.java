@@ -6,29 +6,22 @@ import com.yataygecisle.preference.basket.repository.BasketItemRepository;
 import com.yataygecisle.preference.basket.repository.BasketRepository;
 import com.yataygecisle.preference.basket.services.impl.BasketServiceImpl;
 import com.yataygecisle.preference.basket.web.mappers.BasketItemMapper;
-import com.yataygecisle.preference.basket.web.mappers.BasketItemMapperImpl;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapper;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapperImpl;
-import com.yataygecisle.preference.basket.web.models.AddBasketItemDto;
-import com.yataygecisle.preference.basket.web.models.BasketDto;
-import com.yataygecisle.preference.basket.web.models.BasketItemDto;
-import com.yataygecisle.preference.basket.web.models.CreateBasketDto;
+import com.yataygecisle.preference.basket.web.models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -46,7 +39,6 @@ class BasketServiceTest {
 
     @Spy
     private final BasketMapper basketMapper = new BasketMapperImpl(basketItemMapper);
-
 
     @InjectMocks
     BasketServiceImpl basketService;
@@ -79,16 +71,20 @@ class BasketServiceTest {
         BasketItem basketItem = new BasketItem();
         basketItem.setId(UUID.randomUUID());
         basketItem.setCollegeId(UUID.randomUUID());
-        basketItem.setDepartmentId(UUID.randomUUID());
+        basketItem.setFacultyId(UUID.randomUUID());
+        basketItem.setCourseId(UUID.randomUUID());
         basketItem.setCollegeName("collegeName");
-        basketItem.setDepartmentName("departmentName");
+        basketItem.setFacultyName("departmentName");
+        basketItem.setCourseName("courseName");
 
         BasketItemDto basketItemDto = new BasketItemDto();
         basketItemDto.setBasketId(UUID.randomUUID().toString());
         basketItemDto.setCollegeId(UUID.randomUUID().toString());
-        basketItemDto.setDepartmentId(UUID.randomUUID().toString());
+        basketItemDto.setFacultyId(UUID.randomUUID().toString());
+        basketItemDto.setCourseId(UUID.randomUUID().toString());
         basketItemDto.setCollegeName("collegeName");
-        basketItemDto.setDepartmentName("collegeName");
+        basketItemDto.setFacultyName("collegeName");
+        basketItemDto.setCourseName("courseName");
 
         basket.addBasketItem(basketItem);
 
@@ -118,9 +114,11 @@ class BasketServiceTest {
         BasketItem basketItem = new BasketItem();
         basketItem.setId(UUID.randomUUID());
         basketItem.setCollegeId(UUID.randomUUID());
-        basketItem.setDepartmentId(UUID.randomUUID());
+        basketItem.setFacultyId(UUID.randomUUID());
+        basketItem.setCourseId(UUID.randomUUID());
         basketItem.setCollegeName("collegeName");
-        basketItem.setDepartmentName("departmentName");
+        basketItem.setFacultyName("departmentName");
+        basketItem.setCourseName("departmentName");
 
         Basket basket = new Basket();
         basket.setId(UUID.randomUUID());
@@ -130,10 +128,11 @@ class BasketServiceTest {
 
         when(basketRepository.findByOwnerId(any())).thenReturn(Arrays.asList(basket));
 
-        List<BasketDto> basketDtoList = basketService.getUserBaskets(basket.getOwnerId());
+        List<BasketDto> basketDtoList = basketService.getUsersBaskets(basket.getOwnerId());
 
         assertThat(basketDtoList.size())
                 .isEqualTo(1);
+
 
         assertThat(basketDtoList.get(0).getBasketId())
                 .isEqualTo(basket.getId().toString());
@@ -158,16 +157,129 @@ class BasketServiceTest {
                 .isEqualTo(basketItem.getCollegeId().toString());
 
 
-        assertThat(basketDtoList.get(0).getBasketItems().get(0).getDepartmentId())
-                .isEqualTo(basketItem.getDepartmentId().toString());
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getFacultyId())
+                .isEqualTo(basketItem.getFacultyId().toString());
 
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getCourseId())
+                .isEqualTo(basketItem.getCourseId().toString());
 
         assertThat(basketDtoList.get(0).getBasketItems().get(0).getCollegeName())
                 .isEqualTo(basketItem.getCollegeName());
 
-        assertThat(basketDtoList.get(0).getBasketItems().get(0).getDepartmentName())
-                .isEqualTo(basketItem.getDepartmentName());
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getFacultyName())
+                .isEqualTo(basketItem.getFacultyName());
+
+        assertThat(basketDtoList.get(0).getBasketItems().get(0).getCourseName())
+                .isEqualTo(basketItem.getCourseName());
+
+
 
         verify(basketRepository, times(1)).findByOwnerId(any());
+    }
+
+    @DisplayName("Test Get Basket By Basket Id Successfully")
+    @Test
+    void testGetBasketByBasketIdSuccessfully() {
+
+        BasketItem basketItem = new BasketItem();
+        basketItem.setId(UUID.randomUUID());
+        basketItem.setCollegeId(UUID.randomUUID());
+        basketItem.setFacultyId(UUID.randomUUID());
+        basketItem.setCourseId(UUID.randomUUID());
+        basketItem.setCollegeName("collegeName");
+        basketItem.setFacultyName("departmentName");
+        basketItem.setCollegeName("courseName");
+
+        Basket basket = new Basket();
+        basket.setId(UUID.randomUUID());
+        basket.setBasketName("basketName");
+        basket.setOwnerId(UUID.randomUUID());
+        basket.addBasketItem(basketItem);
+
+        when(basketRepository.findById(any())).thenReturn(Optional.of(basket));
+
+        BasketDto basketDto = basketService.getBasketById(basket.getOwnerId());
+
+
+        assertThat(basketDto.getBasketId())
+                .isEqualTo(basket.getId().toString());
+
+
+        assertThat(basketDto.getBasketName())
+                .isEqualTo(basket.getBasketName());
+
+
+        assertThat(basketDto.getOwnerId())
+                .isEqualTo(basket.getOwnerId().toString());
+
+
+        assertThat(basketDto.getBasketItems().size())
+                .isEqualTo(1);
+
+        assertThat(basketDto.getBasketItems().get(0).getBasketItemId())
+                .isEqualTo(basketItem.getId().toString());
+
+
+        assertThat(basketDto.getBasketItems().get(0).getCollegeId())
+                .isEqualTo(basketItem.getCollegeId().toString());
+
+        assertThat(basketDto.getBasketItems().get(0).getFacultyId())
+                .isEqualTo(basketItem.getFacultyId().toString());
+
+        assertThat(basketDto.getBasketItems().get(0).getCourseId())
+                .isEqualTo(basketItem.getCourseId().toString());
+
+
+        assertThat(basketDto.getBasketItems().get(0).getCollegeName())
+                .isEqualTo(basketItem.getCollegeName());
+
+        assertThat(basketDto.getBasketItems().get(0).getFacultyName())
+                .isEqualTo(basketItem.getFacultyName());
+
+        assertThat(basketDto.getBasketItems().get(0).getCourseName())
+                .isEqualTo(basketItem.getCourseName());
+
+        verify(basketRepository, times(1)).findById(any());
+    }
+
+    @DisplayName("Test Delete Basket By Basket Id Successfully")
+    @Test
+    void testDeleteBasketByBasketIdSuccessfully() {
+        when(basketRepository.existsById(any())).thenReturn(true);
+
+        basketService.deleteBasket(UUID.randomUUID());
+
+        verify(basketRepository, times(1)).deleteById(any());
+        verify(basketRepository, times(1)).existsById(any());
+    }
+
+    @DisplayName("Update Basket Successfully")
+    @Test
+    void testUpdateBasketSuccessfully() {
+        BasketItem basketItem = new BasketItem();
+        basketItem.setId(UUID.randomUUID());
+
+        Basket basket = new Basket();
+        basket.setId(UUID.randomUUID());
+        basket.setBasketName("basketName");
+        basket.setOwnerId(UUID.randomUUID());
+        basket.addBasketItem(basketItem);
+
+        when(basketRepository.findById(any())).thenReturn(Optional.of(basket));
+        when(basketItemRepository.findById(any())).thenReturn(Optional.of(basketItem));
+
+        UpdateBasketDto updateBasket = new UpdateBasketDto();
+        updateBasket.setBasketName("newName");
+        updateBasket.setRemovedBasketItems(Set.of(
+                AddBasketItemDto.builder()
+                        .basketItemId(basketItem.getId().toString())
+                        .build()
+        ));
+
+        basketService.updateBasket(basket.getId(), updateBasket);
+
+        verify(basketRepository, times(1)).save(any());
+        verify(basketRepository, times(1)).findById(any());
+        verify(basketItemRepository, times(1)).findById(any());
     }
 }
