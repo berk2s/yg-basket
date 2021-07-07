@@ -9,6 +9,7 @@ import com.yataygecisle.preference.basket.web.mappers.BasketItemMapper;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapper;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapperImpl;
 import com.yataygecisle.preference.basket.web.models.*;
+import org.hibernate.sql.Delete;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -245,12 +246,17 @@ class BasketServiceTest {
     @DisplayName("Test Delete Basket By Basket Id Successfully")
     @Test
     void testDeleteBasketByBasketIdSuccessfully() {
-        when(basketRepository.existsById(any())).thenReturn(true);
+        when(basketRepository.existsByIdAndOwnerId(any(), any())).thenReturn(true);
 
-        basketService.deleteBasket(UUID.randomUUID());
+        DeleteBasketDto deleteBasketDto = DeleteBasketDto.builder()
+                .basketId(UUID.randomUUID().toString())
+                .ownerId(UUID.randomUUID().toString())
+                .build();
+
+        basketService.deleteBasket(deleteBasketDto);
 
         verify(basketRepository, times(1)).deleteById(any());
-        verify(basketRepository, times(1)).existsById(any());
+        verify(basketRepository, times(1)).existsByIdAndOwnerId(any(), any());
     }
 
     @DisplayName("Update Basket Successfully")
@@ -265,11 +271,12 @@ class BasketServiceTest {
         basket.setOwnerId(UUID.randomUUID());
         basket.addBasketItem(basketItem);
 
-        when(basketRepository.findById(any())).thenReturn(Optional.of(basket));
+        when(basketRepository.findByIdAndOwnerId(any(), any())).thenReturn(Optional.of(basket));
         when(basketItemRepository.findById(any())).thenReturn(Optional.of(basketItem));
 
         UpdateBasketDto updateBasket = new UpdateBasketDto();
         updateBasket.setBasketName("newName");
+        updateBasket.setOwnerId(UUID.randomUUID().toString());
         updateBasket.setRemovedBasketItems(Set.of(
                 AddBasketItemDto.builder()
                         .basketItemId(basketItem.getId().toString())
@@ -279,7 +286,7 @@ class BasketServiceTest {
         basketService.updateBasket(basket.getId(), updateBasket);
 
         verify(basketRepository, times(1)).save(any());
-        verify(basketRepository, times(1)).findById(any());
+        verify(basketRepository, times(1)).findByIdAndOwnerId(any(), any());
         verify(basketItemRepository, times(1)).findById(any());
     }
 }

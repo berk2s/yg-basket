@@ -2,6 +2,7 @@ package com.yataygecisle.preference.basket.services;
 
 import com.yataygecisle.preference.basket.web.models.BasketDto;
 import com.yataygecisle.preference.basket.web.models.CreateBasketDto;
+import com.yataygecisle.preference.basket.web.models.DeleteBasketDto;
 import com.yataygecisle.preference.basket.web.models.UpdateBasketDto;
 
 import java.util.List;
@@ -17,6 +18,6 @@ public interface BasketService {
 
     void updateBasket(UUID basketId, UpdateBasketDto updateBasket);
 
-    void deleteBasket(UUID basketId);
+    void deleteBasket(DeleteBasketDto deleteBasketDto);
 
 }

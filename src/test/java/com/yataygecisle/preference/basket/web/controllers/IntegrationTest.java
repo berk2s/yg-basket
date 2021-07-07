@@ -60,6 +60,7 @@ public class IntegrationTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("basketId", basket.getId());
+        map.put("ownerId", basket.getOwnerId());
         map.put("basketName", basket.getBasketName());
         map.put("basketItemId", basketItem.getId());
         map.put("collegeName", basketItem.getCollegeName());

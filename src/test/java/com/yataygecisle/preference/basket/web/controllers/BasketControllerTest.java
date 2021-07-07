@@ -119,7 +119,7 @@ public class BasketControllerTest extends IntegrationTest {
         @Test
         void deleteBasketSuccessfully() throws Exception {
 
-            mockMvc.perform(delete(BasketController.ENDPOINT + "/" + map.get("basketId").toString())
+            mockMvc.perform(delete(BasketController.ENDPOINT + "/" + map.get("ownerId").toString() + "/" + map.get("basketId").toString())
                     .header("Authorization", "Bearer " + accessToken))
                     .andExpect(status().isNoContent());
 
@@ -131,6 +131,7 @@ public class BasketControllerTest extends IntegrationTest {
 
             UpdateBasketDto updateBasket = UpdateBasketDto.builder()
                     .basketName("newBasketName")
+                    .ownerId(userId)
                     .removedBasketItems(Set.of(AddBasketItemDto.builder().basketItemId(map.get("basketItemId").toString()).build()))
                     .newBasketItems(Set.of())
                     .build();

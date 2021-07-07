@@ -21,6 +21,9 @@ public class UpdateBasketDto {
     @NotBlank
     private String basketName;
 
+    @NotBlank
+    private String ownerId;
+
     @NotNull
     @NotEmpty
     @NotBlank

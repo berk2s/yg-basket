@@ -7,10 +7,7 @@ import com.yataygecisle.preference.basket.repository.BasketRepository;
 import com.yataygecisle.preference.basket.services.BasketService;
 import com.yataygecisle.preference.basket.web.mappers.BasketItemMapper;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapper;
-import com.yataygecisle.preference.basket.web.models.AddBasketItemDto;
-import com.yataygecisle.preference.basket.web.models.BasketDto;
-import com.yataygecisle.preference.basket.web.models.CreateBasketDto;
-import com.yataygecisle.preference.basket.web.models.UpdateBasketDto;
+import com.yataygecisle.preference.basket.web.models.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -74,10 +71,11 @@ public class BasketServiceImpl implements BasketService {
         return basketMapper.basketToBasketDto(basket);
     }
 
-    //@PreAuthorize("hasAuthority('UPDATE_BASKET')")
+    @PreAuthorize("hasAuthority('UPDATE_BASKET') and #updateBasket.getOwnerId() == authentication.principal.getSubject() or hasRole('ROLE_ADMIN')")
     @Override
     public void updateBasket(UUID basketId, UpdateBasketDto updateBasket) {
-        Basket basket = basketRepository.findById(basketId)
+        UUID ownerId = UUID.fromString(updateBasket.getOwnerId());
+        Basket basket = basketRepository.findByIdAndOwnerId(basketId, ownerId)
                 .orElseThrow(() -> {
                     log.warn("Cannot find basket by given basket id [basketId: {}]", basketId.toString());
                     throw new RuntimeException("err");
@@ -112,10 +110,13 @@ public class BasketServiceImpl implements BasketService {
         basketRepository.save(basket);
     }
 
-    @PreAuthorize("hasAuthority('DELETE_BASKET')")
+    @PreAuthorize("hasAuthority('DELETE_BASKET') and #deleteBasket.getOwnerId() == authentication.principal.getSubject() or hasRole('ROLE_ADMIN')")
     @Override
-    public void deleteBasket(UUID basketId) {
-        if(!basketRepository.existsById(basketId)){
+    public void deleteBasket(DeleteBasketDto deleteBasket) {
+        UUID basketId = UUID.fromString(deleteBasket.getBasketId());
+        UUID ownerId = UUID.fromString(deleteBasket.getOwnerId());
+
+        if(!basketRepository.existsByIdAndOwnerId(basketId, ownerId)){
             log.warn("Cannot find basket by given id for deleting basket [basketId: {}]",basketId);
             throw new RuntimeException("err");
         }
