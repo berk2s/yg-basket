@@ -1,6 +1,7 @@
 package com.yataygecisle.preference.basket.domain;
 
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,12 +20,14 @@ public class Basket extends BaseEntity {
     private String basketName;
 
     @Column(name = "owner_id")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID ownerId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.MERGE,
             CascadeType.REFRESH,
-            CascadeType.DETACH
+            CascadeType.DETACH,
+            CascadeType.REMOVE
     })
     @JoinTable(name = "basket_items",
             joinColumns = {
@@ -37,5 +40,10 @@ public class Basket extends BaseEntity {
     public void addBasketItem(BasketItem basketItem) {
         basketItem.getBaskets().add(this);
         basketItems.add(basketItem);
+    }
+
+    public void removeBasketItem(BasketItem basketItem) {
+        basketItem.getBaskets().remove(basketItem);
+        basketItems.remove(basketItem);
     }
 }

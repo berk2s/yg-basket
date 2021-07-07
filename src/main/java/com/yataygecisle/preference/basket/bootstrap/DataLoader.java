@@ -7,11 +7,13 @@ import com.yataygecisle.preference.basket.repository.BasketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.UUID;
 
+@Profile("local")
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -28,17 +30,21 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void loadBaskets() {
-        BasketItem basketItem = BasketItem.builder()
-                .collegeName("collegeName")
-                .departmentName("departmentName")
-                .collegeId(UUID.randomUUID())
-                .departmentId(UUID.randomUUID())
-                .build();
+        if (basketItemRepository.findAll().size() == 0) {
+            BasketItem basketItem = BasketItem.builder()
+                    .collegeName("collegeName")
+                    .facultyName("departmentName")
+                    .courseName("courseName")
+                    .collegeId(UUID.randomUUID())
+                    .facultyId(UUID.randomUUID())
+                    .courseId(UUID.randomUUID())
+                    .build();
 
-        basketItemRepository.save(basketItem);
+            basketItemRepository.save(basketItem);
 
-        log.info("\n\n\n\n Created Basket Item Id: "
-                + basketItem.getId().toString()
-                + "\n\n\n\n");
+            log.info("\n\n\n\n Created Basket Item Id: "
+                    + basketItem.getId().toString()
+                    + "\n\n\n\n");
+        }
     }
 }

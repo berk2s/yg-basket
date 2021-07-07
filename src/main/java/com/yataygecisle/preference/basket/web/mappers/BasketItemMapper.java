@@ -16,7 +16,8 @@ public interface BasketItemMapper {
 
     @Mappings({
             @Mapping(target = "collegeId", expression = "java( UUID.fromString(basketItemDto.getCollegeId()) )"),
-            @Mapping(target = "departmentId", expression = "java( UUID.fromString(basketItemDto.getCollegeId()) )"),
+            @Mapping(target = "facultyId", expression = "java( UUID.fromString(basketItemDto.getFacultyId()) )"),
+            @Mapping(target = "courseId", expression = "java( UUID.fromString(basketItemDto.getCourseId()) )"),
     })
     BasketItem basketItemDtoToBasketItem(BasketItemDto basketItemDto);
 
@@ -28,14 +29,20 @@ public interface BasketItemMapper {
     @Mappings({
             @Mapping(target = "basketItemId", expression = "java( basketItem.getId().toString() )"),
             @Mapping(target = "collegeId", expression = "java( basketItem.getCollegeId().toString() )"),
-            @Mapping(target = "departmentId", expression = "java( basketItem.getDepartmentId().toString() )"),
+            @Mapping(target = "facultyId", expression = "java( basketItem.getFacultyId().toString() )"),
+            @Mapping(target = "courseId", expression = "java( basketItem.getCourseId().toString() )"),
+            @Mapping(target = "createdAt", expression = "java( basketItem.getCreatedAt() )"),
+            @Mapping(target = "lastModifiedAt", expression = "java( basketItem.getLastModifiedAt() )"),
     })
     BasketItemDto basketItemDtoToBasketItem(BasketItem basketItem);
 
     @Mappings({
             @Mapping(target = "basketItemId", expression = "java( basketItem.getId().toString() )"),
             @Mapping(target = "collegeId", expression = "java( basketItem.getCollegeId().toString() )"),
-            @Mapping(target = "departmentId", expression = "java( basketItem.getDepartmentId().toString() )"),
+            @Mapping(target = "facultyId", expression = "java( basketItem.getFacultyId().toString() )"),
+            @Mapping(target = "courseId", expression = "java( basketItem.getCourseId().toString() )"),
+            @Mapping(target = "createdAt", expression = "java( basketItem.getCreatedAt() )"),
+            @Mapping(target = "lastModifiedAt", expression = "java( basketItem.getLastModifiedAt() )"),
     })
     List<BasketItemDto> basketItemDtoToBasketItem(List<BasketItem> basketItem);
 

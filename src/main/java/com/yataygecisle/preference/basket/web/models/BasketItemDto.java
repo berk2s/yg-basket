@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,10 +19,19 @@ public class BasketItemDto {
 
     private String collegeId;
 
-    private String departmentId;
+    private String facultyId;
+
+    private String courseId;
 
     private String collegeName;
 
-    private String departmentName;
+    private String facultyName;
+
+    private String courseName;
+
+
+    private Timestamp createdAt;
+
+    private Timestamp lastModifiedAt;
 
 }

@@ -38,35 +38,16 @@ public class IntegrationTest {
     @Autowired
     BasketRepository basketRepository;
 
-    UUID itemId1;
-    UUID collegeId1;
-    UUID departmentId1;
-
-
-    @Transactional
-    public void itemLoader() {
-        BasketItem basketItem1 = BasketItem.builder()
-                .collegeId(UUID.randomUUID())
-                .departmentId(UUID.randomUUID())
-                .departmentName("departmentName")
-                .collegeName("collegeName")
-                .build();
-
-        basketItemRepository.saveAll(Set.of(basketItem1));
-
-        itemId1 = basketItem1.getId();
-        collegeId1 = basketItem1.getCollegeId();
-        departmentId1 = basketItem1.getDepartmentId();
-
-    }
-
     @Transactional
     public Map<String, Object> basketLoader(UUID ownerId) {
+
         BasketItem basketItem = new BasketItem();
-        basketItem.setDepartmentName("departmentName");
+        basketItem.setFacultyName("departmentName");
         basketItem.setCollegeName("collegeName");
+        basketItem.setCourseName("courseName");
         basketItem.setCollegeId(UUID.randomUUID());
-        basketItem.setDepartmentId(UUID.randomUUID());
+        basketItem.setFacultyId(UUID.randomUUID());
+        basketItem.setCourseId(UUID.randomUUID());
 
         basketItemRepository.saveAll(Set.of(basketItem));
 
@@ -79,15 +60,19 @@ public class IntegrationTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("basketId", basket.getId());
+        map.put("ownerId", basket.getOwnerId());
         map.put("basketName", basket.getBasketName());
         map.put("basketItemId", basketItem.getId());
         map.put("collegeName", basketItem.getCollegeName());
-        map.put("departmentName", basketItem.getDepartmentName());
+        map.put("facultyName", basketItem.getFacultyName());
+        map.put("courseName", basketItem.getCourseName());
         map.put("collegeId", basketItem.getCollegeId());
-        map.put("departmentId", basketItem.getDepartmentId());
+        map.put("facultyId", basketItem.getFacultyId());
+        map.put("courseId", basketItem.getCourseId());
 
         return map;
     }
+
 
     public String createAccessToken() throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
