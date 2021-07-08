@@ -5,6 +5,8 @@ import com.yataygecisle.preference.basket.domain.BasketItem;
 import com.yataygecisle.preference.basket.repository.BasketItemRepository;
 import com.yataygecisle.preference.basket.repository.BasketRepository;
 import com.yataygecisle.preference.basket.services.BasketService;
+import com.yataygecisle.preference.basket.web.exceptions.BasketItemNotFoundException;
+import com.yataygecisle.preference.basket.web.exceptions.BasketNotFoundException;
 import com.yataygecisle.preference.basket.web.mappers.BasketItemMapper;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapper;
 import com.yataygecisle.preference.basket.web.models.*;
@@ -38,7 +40,7 @@ public class BasketServiceImpl implements BasketService {
             BasketItem basketItem = basketItemRepository.findById(UUID.fromString(addBasketItem.getBasketItemId()))
                     .orElseThrow(() -> {
                         log.warn("Invalid basket item id [Basket Item Id: {} ]", addBasketItem.getBasketItemId());
-                        throw new RuntimeException("Invalid basket item id"); // TODO
+                        throw new BasketItemNotFoundException(ErrorDescription.BASKET_ITEM_NOT_FOUND.getErrorDesc());
                     });
 
             basket.addBasketItem(basketItem);
@@ -65,7 +67,7 @@ public class BasketServiceImpl implements BasketService {
         Basket basket = basketRepository.findById(basketId)
                 .orElseThrow(() -> {
                     log.warn("Cannot find basket by given basket id [basketId: {}]", basketId.toString());
-                    throw new RuntimeException("err");
+                    throw new BasketNotFoundException(ErrorDescription.BASKET_NOT_FOUND.getErrorDesc());
                 });
 
         return basketMapper.basketToBasketDto(basket);
@@ -78,7 +80,7 @@ public class BasketServiceImpl implements BasketService {
         Basket basket = basketRepository.findByIdAndOwnerId(basketId, ownerId)
                 .orElseThrow(() -> {
                     log.warn("Cannot find basket by given basket id [basketId: {}]", basketId.toString());
-                    throw new RuntimeException("err");
+                    throw new BasketNotFoundException(ErrorDescription.BASKET_NOT_FOUND.getErrorDesc());
                 });
 
         basket.setBasketName(updateBasket.getBasketName());
@@ -88,7 +90,7 @@ public class BasketServiceImpl implements BasketService {
                 BasketItem basketItem = basketItemRepository.findById(UUID.fromString(addBasketItem.getBasketItemId()))
                         .orElseThrow(() -> {
                             log.warn("Invalid basket item id [Basket Item Id: {} ]", addBasketItem.getBasketItemId());
-                            throw new RuntimeException("Invalid basket item id"); // TODO
+                            throw new BasketItemNotFoundException(ErrorDescription.BASKET_ITEM_NOT_FOUND.getErrorDesc());
                         });
 
                 basket.addBasketItem(basketItem);
@@ -100,7 +102,7 @@ public class BasketServiceImpl implements BasketService {
                 BasketItem basketItem = basketItemRepository.findById(UUID.fromString(addBasketItem.getBasketItemId()))
                         .orElseThrow(() -> {
                             log.warn("Invalid basket item id [Basket Item Id: {} ]", addBasketItem.getBasketItemId());
-                            throw new RuntimeException("Invalid basket item id"); // TODO
+                            throw new BasketItemNotFoundException(ErrorDescription.BASKET_ITEM_NOT_FOUND.getErrorDesc());
                         });
 
                 basket.removeBasketItem(basketItem);
@@ -118,7 +120,7 @@ public class BasketServiceImpl implements BasketService {
 
         if(!basketRepository.existsByIdAndOwnerId(basketId, ownerId)){
             log.warn("Cannot find basket by given id for deleting basket [basketId: {}]",basketId);
-            throw new RuntimeException("err");
+            throw new BasketNotFoundException(ErrorDescription.BASKET_NOT_FOUND.getErrorDesc());
         }
 
         basketRepository.deleteById(basketId);

@@ -3,9 +3,7 @@ package com.yataygecisle.preference.basket.web.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yataygecisle.preference.basket.web.models.AddBasketItemDto;
-import com.yataygecisle.preference.basket.web.models.CreateBasketDto;
-import com.yataygecisle.preference.basket.web.models.UpdateBasketDto;
+import com.yataygecisle.preference.basket.web.models.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -37,7 +35,6 @@ public class BasketControllerTest extends IntegrationTest {
     Map<String, Object> map;
 
     String userId;
-
 
     @Nested
     class TestEndpoints {
@@ -168,4 +165,154 @@ public class BasketControllerTest extends IntegrationTest {
         }
 
     }
+
+    @Nested
+    class TestExceptions {
+
+        @BeforeEach
+        void setUp() throws JsonProcessingException {
+            accessToken = createAccessToken();
+            String[] chunks = accessToken.split("\\.");
+            Base64.Decoder decoder = Base64.getDecoder();
+
+            String payload = new String(decoder.decode(chunks[1]));
+            JsonNode root = objectMapper.readTree(payload);
+            JsonNode sub = root.path("sub");
+
+            userId = sub.asText();
+
+            map = basketLoader(UUID.fromString(userId));
+        }
+
+        @DisplayName("User Creates Preference Basket Item Exception")
+        @Test
+        void userCreatesPreferenceBasketItemException() throws Exception {
+
+            AddBasketItemDto addBasketItem1 = AddBasketItemDto.builder()
+                    .basketItemId(UUID.randomUUID().toString())
+                    .build();
+
+            CreateBasketDto createBasketDto = CreateBasketDto.builder()
+                    .basketName("basketName")
+                    .basketItems(Set.of(addBasketItem1))
+                    .ownerId(userId)
+                    .build();
+
+            mockMvc.perform(post(BasketController.ENDPOINT)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createBasketDto)))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.error", is(ErrorType.NOT_FOUND.getErr())))
+                    .andExpect(jsonPath("$.error_description", is(ErrorDescription.BASKET_ITEM_NOT_FOUND.getErrorDesc())));
+
+        }
+
+
+        @DisplayName("Get Basket By Basket Id Exception")
+        @Test
+        void getBasketByBasketIdException() throws Exception {
+
+            mockMvc.perform(get(BasketController.ENDPOINT + "/" + UUID.randomUUID().toString())
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.error", is(ErrorType.NOT_FOUND.getErr())))
+                    .andExpect(jsonPath("$.error_description", is(ErrorDescription.BASKET_NOT_FOUND.getErrorDesc())));
+
+        }
+
+        @DisplayName("Update Basket BasketNotFoundException")
+        @Test
+        void updateBasketBasketNotFoundException() throws Exception {
+
+            UpdateBasketDto updateBasket = UpdateBasketDto.builder()
+                    .basketName("newBasketName")
+                    .ownerId(userId)
+                    .removedBasketItems(Set.of(AddBasketItemDto.builder().basketItemId(map.get("basketItemId").toString()).build()))
+                    .newBasketItems(Set.of())
+                    .build();
+
+            mockMvc.perform(put(BasketController.ENDPOINT + "/" + UUID.randomUUID().toString())
+                    .content(objectMapper.writeValueAsString(updateBasket))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.error", is(ErrorType.NOT_FOUND.getErr())))
+                    .andExpect(jsonPath("$.error_description", is(ErrorDescription.BASKET_NOT_FOUND.getErrorDesc())));
+
+
+        }
+
+        @DisplayName("Update Basket BasketItemNotFoundException While Adding")
+        @Test
+        void updateBasketBasketItemNotFoundExceptionWhileAdding() throws Exception {
+
+            UpdateBasketDto updateBasket = UpdateBasketDto.builder()
+                    .basketName("newBasketName")
+                    .ownerId(userId)
+                    .removedBasketItems(Set.of(AddBasketItemDto.builder().basketItemId(map.get("basketItemId").toString()).build()))
+                    .newBasketItems(Set.of(AddBasketItemDto.builder().basketItemId(UUID.randomUUID().toString()).build()))
+                    .build();
+
+            mockMvc.perform(put(BasketController.ENDPOINT + "/" + map.get("basketId").toString())
+                    .content(objectMapper.writeValueAsString(updateBasket))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.error", is(ErrorType.NOT_FOUND.getErr())))
+                    .andExpect(jsonPath("$.error_description", is(ErrorDescription.BASKET_ITEM_NOT_FOUND.getErrorDesc())));
+
+
+        }
+
+        @DisplayName("Update Basket BasketItemNotFoundException While Removing")
+        @Test
+        void updateBasketBasketItemNotFoundExceptionWhileRemoving() throws Exception {
+
+            UpdateBasketDto updateBasket = UpdateBasketDto.builder()
+                    .basketName("newBasketName")
+                    .ownerId(userId)
+                    .removedBasketItems(Set.of(AddBasketItemDto.builder().basketItemId(UUID.randomUUID().toString()).build()))
+                    .newBasketItems(Set.of())
+                    .build();
+
+            mockMvc.perform(put(BasketController.ENDPOINT + "/" + map.get("basketId").toString())
+                    .content(objectMapper.writeValueAsString(updateBasket))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.error", is(ErrorType.NOT_FOUND.getErr())))
+                    .andExpect(jsonPath("$.error_description", is(ErrorDescription.BASKET_ITEM_NOT_FOUND.getErrorDesc())));
+
+
+        }
+
+        @DisplayName("Delete Basket BasketNotFoundException")
+        @Test
+        void deleteBasketBasketNotFoundException() throws Exception {
+
+            mockMvc.perform(delete(BasketController.ENDPOINT + "/" + userId + "/" + UUID.randomUUID())
+                    .header("Authorization", "Bearer " + accessToken))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.error", is(ErrorType.NOT_FOUND.getErr())))
+                    .andExpect(jsonPath("$.error_description", is(ErrorDescription.BASKET_NOT_FOUND.getErrorDesc())));
+
+        }
+
+
+        @DisplayName("Invalid Token Unauthorized")
+        @Test
+        void invalidTokenUnauthorized() throws Exception {
+
+            mockMvc.perform(get(BasketController.ENDPOINT + "/" + UUID.randomUUID().toString()))
+                    .andExpect(status().isUnauthorized());
+        }
+
+
+
+
+
+    }
+
 }

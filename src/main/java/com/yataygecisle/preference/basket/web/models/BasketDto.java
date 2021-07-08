@@ -1,5 +1,6 @@
 package com.yataygecisle.preference.basket.web.models;
 
+import com.yataygecisle.commons.annotations.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +18,10 @@ import java.util.List;
 @Builder
 public class BasketDto {
 
+    @UUID
     private String basketId;
 
+    @UUID
     private String ownerId;
 
     private String basketName;
