@@ -1,6 +1,8 @@
 package com.yataygecisle.preference.basket.config;
 
+import com.yataygecisle.commons.security.TokenClaimsConverter;
 import com.yataygecisle.preference.basket.web.controllers.BasketController;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -30,19 +32,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .jwtAuthenticationConverter(getJwtAuthenticationConverter()));
     }
 
-    private Converter<Jwt, AbstractAuthenticationToken> getJwtAuthenticationConverter() {
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-
-            for (String authority :  jwt.getClaimAsStringList("authorities")) {
-                grantedAuthorities.add(
-                        new SimpleGrantedAuthority(authority)
-                );
-            }
-
-            return grantedAuthorities;
-        });
-        return converter;
+    @Bean
+    public Converter<Jwt, AbstractAuthenticationToken> getJwtAuthenticationConverter() {
+        return TokenClaimsConverter.converter();
     }
 }
