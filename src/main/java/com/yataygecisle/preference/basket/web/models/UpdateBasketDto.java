@@ -1,6 +1,7 @@
 package com.yataygecisle.preference.basket.web.models;
 
 
+import com.yataygecisle.commons.annotations.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,17 +22,14 @@ public class UpdateBasketDto {
     @NotBlank
     private String basketName;
 
+    @UUID
     @NotBlank
     private String ownerId;
 
     @NotNull
-    @NotEmpty
-    @NotBlank
     private Set<AddBasketItemDto> newBasketItems = new HashSet<>();
 
     @NotNull
-    @NotEmpty
-    @NotBlank
     private Set<AddBasketItemDto> removedBasketItems = new HashSet<>();
 
 }

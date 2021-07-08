@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class BasketController {
     private final BasketService basketService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BasketDto> createBasket(@RequestBody CreateBasketDto createBasketDto) {
+    public ResponseEntity<BasketDto> createBasket(@Valid @RequestBody CreateBasketDto createBasketDto) {
         return new ResponseEntity<>(basketService.create(createBasketDto), HttpStatus.CREATED);
     }
 
@@ -41,7 +42,7 @@ public class BasketController {
 
     @PutMapping(path = "/{basketId}")
     public ResponseEntity updateBasketById(@PathVariable UUID basketId,
-                                           @RequestBody UpdateBasketDto updateBasket) {
+                                           @Valid @RequestBody UpdateBasketDto updateBasket) {
         basketService.updateBasket(basketId, updateBasket);
 
         return ResponseEntity
