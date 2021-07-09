@@ -19,17 +19,15 @@ import java.util.Set;
 @Builder
 public class UpdateBasketDto {
 
-    @NotBlank
+    @NotNull(message = "Basket name must not be empty")
     private String basketName;
 
-    @UUID
-    @NotBlank
+    @UUID(message = "Owner ID must be UUID")
+    @NotNull(message = "Owner ID must not be empty")
     private String ownerId;
 
-    @NotNull
     private Set<AddBasketItemDto> newBasketItems = new HashSet<>();
 
-    @NotNull
     private Set<AddBasketItemDto> removedBasketItems = new HashSet<>();
 
 }

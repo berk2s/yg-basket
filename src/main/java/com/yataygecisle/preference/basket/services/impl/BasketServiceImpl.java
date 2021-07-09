@@ -85,7 +85,7 @@ public class BasketServiceImpl implements BasketService {
 
         basket.setBasketName(updateBasket.getBasketName());
 
-        if (updateBasket.getNewBasketItems().size() > 0) {
+        if (updateBasket.getNewBasketItems() != null && updateBasket.getNewBasketItems().size() > 0) {
             for (AddBasketItemDto addBasketItem : updateBasket.getNewBasketItems()) {
                 BasketItem basketItem = basketItemRepository.findById(UUID.fromString(addBasketItem.getBasketItemId()))
                         .orElseThrow(() -> {
@@ -97,7 +97,7 @@ public class BasketServiceImpl implements BasketService {
             }
         }
 
-        if(updateBasket.getRemovedBasketItems().size() > 0) {
+        if(updateBasket.getRemovedBasketItems() != null && updateBasket.getRemovedBasketItems().size() > 0) {
             for (AddBasketItemDto addBasketItem : updateBasket.getRemovedBasketItems()) {
                 BasketItem basketItem = basketItemRepository.findById(UUID.fromString(addBasketItem.getBasketItemId()))
                         .orElseThrow(() -> {

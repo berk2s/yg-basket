@@ -65,7 +65,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.warn("MethodArgumentNotValidException: {}", ex.getMessage());
-        return errorResponse(new ErrorResponse(ErrorType.INVALID_REQUEST.getErr(), ex.getMessage(), HttpStatus.BAD_REQUEST));
+        return errorResponse(new ErrorResponse(ErrorType.INVALID_REQUEST.getErr(), ex.getFieldErrors(), HttpStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
