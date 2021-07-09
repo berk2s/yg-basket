@@ -20,6 +20,7 @@ import java.util.UUID;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class BasketControllerTest extends IntegrationTest {
@@ -300,18 +301,36 @@ public class BasketControllerTest extends IntegrationTest {
 
         }
 
-
         @DisplayName("Invalid Token Unauthorized")
         @Test
         void invalidTokenUnauthorized() throws Exception {
-
             mockMvc.perform(get(BasketController.ENDPOINT + "/" + UUID.randomUUID().toString()))
                     .andExpect(status().isUnauthorized());
         }
 
+        @DisplayName("Not Valid Request Body")
+        @Test
+        void notValidRequestBody() throws Exception {
+
+            AddBasketItemDto addBasketItem1 = AddBasketItemDto.builder()
+                    .basketItemId(UUID.randomUUID().toString())
+                    .build();
+
+            CreateBasketDto createBasketDto = CreateBasketDto.builder()
+                    .basketItems(Set.of(addBasketItem1))
+                    .ownerId(userId)
+                    .build();
 
 
+            mockMvc.perform(post(BasketController.ENDPOINT)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createBasketDto)))
+                    .andDo(print())
+                    .andExpect(status().is4xxClientError());
 
+
+        }
 
     }
 

@@ -14,8 +14,8 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class AddBasketItemDto {
 
-    @UUID
-    @NotNull
+    @UUID(message = "Basket Item ID must be UUID")
+    @NotNull(message = "Basket Item ID must not be empty")
     private String basketItemId;
 
 }

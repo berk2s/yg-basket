@@ -17,14 +17,14 @@ import java.util.Set;
 @Builder
 public class CreateBasketDto {
 
-    @NotNull
+    @NotNull(message = "Basket name must not be empty")
     private String basketName;
 
-    @UUID
-    @NotNull
+    @UUID(message = "Owner ID must be UUID")
+    @NotNull(message = "Owner ID must not be empty")
     private String ownerId;
 
-    @NotNull
+    @NotNull(message = "Basket items must not be null")
     private Set<AddBasketItemDto> basketItems = new HashSet<>();
 
 }

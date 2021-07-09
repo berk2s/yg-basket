@@ -14,12 +14,12 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class DeleteBasketDto {
 
-    @UUID
-    @NotNull
+    @UUID(message = "Owner ID must be UUID")
+    @NotNull(message = "Owner ID must not be null")
     private String ownerId;
 
-    @UUID
-    @NotNull
+    @UUID(message = "Basket ID must be UUID")
+    @NotNull(message = "Basket ID must not be null")
     private String basketId;
 
 }
