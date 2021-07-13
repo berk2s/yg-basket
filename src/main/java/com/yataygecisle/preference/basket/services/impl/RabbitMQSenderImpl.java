@@ -6,6 +6,7 @@ import com.yataygecisle.commons.models.RoutingKeys;
 import com.yataygecisle.preference.basket.domain.Basket;
 import com.yataygecisle.preference.basket.services.RabbitMQSender;
 import com.yataygecisle.preference.basket.web.models.BasketDto;
+import com.yataygecisle.preference.basket.web.models.CreatedBasketQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -19,7 +20,7 @@ public class RabbitMQSenderImpl implements RabbitMQSender {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public void sendCreatedBasket(BasketDto basket) {
+    public void sendCreatedBasket(CreatedBasketQueue basket) {
         rabbitTemplate.convertAndSend(Exchanges.CREATED_BASKET, RoutingKeys.CREATED_BASKET, basket);
         log.info("Created Basket has been sent to queue");
     }

@@ -82,7 +82,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     protected ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException ex) {
-        log.warn("NullPointerException: {} {}", ex.getLocalizedMessage(), ex.getMessage());
+        log.warn("NullPointerException: {} {} {} {}", ex.getStackTrace(), ex.getSuppressed(), ex.getCause(), ex.getMessage());
         return errorResponse(new ErrorResponse(ErrorType.SERVER_ERROR.getErr(), ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
