@@ -9,7 +9,6 @@ import com.yataygecisle.preference.basket.web.mappers.BasketItemMapper;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapper;
 import com.yataygecisle.preference.basket.web.mappers.BasketMapperImpl;
 import com.yataygecisle.preference.basket.web.models.*;
-import org.hibernate.sql.Delete;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,6 +92,8 @@ class BasketServiceTest {
 
         when(basketRepository.save(any())).thenReturn(basket);
 
+//        doNothing().when(rabbitMQSender).sendCreatedBasket(any());
+
         BasketDto basketDto = basketService.create(createBasketDto);
 
         assertThat(basketDto.getBasketId())
@@ -106,6 +107,7 @@ class BasketServiceTest {
 
         verify(basketRepository, times(1)).save(any());
         verify(basketItemRepository, times(1)).findById(any());
+    //    verify(rabbitMQSender, times(1)).sendCreatedBasket(any());
     }
 
     @DisplayName("Test Get User's Baskets Successfully")

@@ -16,3 +16,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080
+  rabbitmq:
+    host: localhost
+    port: 15672
+    username: guest
+    password: guest

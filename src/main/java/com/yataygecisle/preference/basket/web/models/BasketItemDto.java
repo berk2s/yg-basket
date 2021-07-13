@@ -6,13 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BasketItemDto {
+public class BasketItemDto implements Serializable {
+
+    static final long serialVersionUID = 87657890876542L;
 
     @UUID
     private String basketItemId;
