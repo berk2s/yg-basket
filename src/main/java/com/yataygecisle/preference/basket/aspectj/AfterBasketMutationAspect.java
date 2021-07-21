@@ -1,8 +1,9 @@
 package com.yataygecisle.preference.basket.aspectj;
 
+import com.yataygecisle.commons.models.CreatedBasketItemQueue;
+import com.yataygecisle.commons.models.CreatedBasketQueue;
 import com.yataygecisle.preference.basket.services.RabbitMQSender;
 import com.yataygecisle.preference.basket.web.models.BasketDto;
-import com.yataygecisle.preference.basket.web.models.CreatedBasketQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -10,8 +11,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,7 +33,19 @@ public class AfterBasketMutationAspect {
         createdBasketQueue.setPerformedBy(performedBy);
 
         basket.getBasketItems()
-                .forEach(basketItem -> createdBasketQueue.getBasketItems().add(basketItem.getBasketItemId()));
+                .forEach(basketItem -> {
+                    CreatedBasketItemQueue createdBasketItemQueue = new CreatedBasketItemQueue();
+                    createdBasketItemQueue.setBasketId(basketItem.getBasketId());
+                    createdBasketItemQueue.setBasketItemId(basketItem.getBasketItemId());
+                    createdBasketItemQueue.setCollegeId(basketItem.getCollegeId());
+                    createdBasketItemQueue.setFacultyId(basketItem.getFacultyId());
+                    createdBasketItemQueue.setCourseId(basketItem.getCourseId());
+                    createdBasketItemQueue.setCollegeName(basketItem.getCollegeName());
+                    createdBasketItemQueue.setFacultyName(basketItem.getFacultyName());
+                    createdBasketItemQueue.setCourseName(basketItem.getCourseName());
+
+                    createdBasketQueue.getBasketItems().add(createdBasketItemQueue);
+                });
 
         rabbitMQSender.sendCreatedBasket(createdBasketQueue);
 
