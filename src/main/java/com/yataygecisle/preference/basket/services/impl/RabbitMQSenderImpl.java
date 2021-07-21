@@ -1,16 +1,12 @@
 package com.yataygecisle.preference.basket.services.impl;
 
+import com.yataygecisle.commons.models.CreatedBasketQueue;
 import com.yataygecisle.commons.models.Exchanges;
-import com.yataygecisle.commons.models.Queues;
 import com.yataygecisle.commons.models.RoutingKeys;
-import com.yataygecisle.preference.basket.domain.Basket;
 import com.yataygecisle.preference.basket.services.RabbitMQSender;
-import com.yataygecisle.preference.basket.web.models.BasketDto;
-import com.yataygecisle.preference.basket.web.models.CreatedBasketQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
